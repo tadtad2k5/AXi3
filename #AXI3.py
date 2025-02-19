@@ -21,6 +21,21 @@ class AXI3:
         self.WREADY = False
         self.BVALID = False
         self.BREADY = False
+    def set_arvalid(self, value):
+        self.ARVALID = value
+
+    def set_rready(self, value):
+        self.RREADY = value
+
+    def set_awvalid(self, value):
+        self.AWVALID = value
+
+    def set_wvalid(self, value):
+        self.WVALID = value
+
+    def set_bready(self, value):
+        self.BREADY = value
+
         # = VAILD/Ready
 '''   Kênh AR sẽ có tín hiệu ARVALID (master) và tín hiệu ARREADY (slave).
 Kênh R sẽ có tín hiệu RVALID (slave) và tín hiệu RREADY (master) .
@@ -62,6 +77,54 @@ class Master(AXI3):
         if self.B == "BREADY":
             return True
         return False
+class Slave(AXI3):
+    def __init__(self):
+        super().__init__()
+        self.ARREADY = False
+        self.RVALID = False
+        self.AWREADY = False
+        self.WREADY = False
+        self.BVALID = False
+
+    def set_arready(self, value):
+        self.ARREADY = value
+
+    def set_rvalid(self, value):
+        self.RVALID = value
+
+    def set_awready(self, value):
+        self.AWREADY = value
+
+    def set_wready(self, value):
+        self.WREADY = value
+
+    def set_bvalid(self, value):
+        self.BVALID = value
+
+    def read_address_channel(self):
+        if self.ARREADY:
+            return "ARREADY is True"
+        return "ARREADY is False"
+
+    def read_data_channel(self):
+        if self.RVALID:
+            return "RVALID is True"
+        return "RVALID is False"
+
+    def write_address_channel(self):
+        if self.AWREADY:
+            return "AWREADY is True"
+        return "AWREADY is False"
+
+    def write_data_channel(self):
+        if self.WREADY:
+            return "WREADY is True"
+        return "WREADY is False"
+
+    def write_response_channel(self):
+        if self.BVALID:
+            return "BVALID is True"
+        return "BVALID is False"
     
     
 

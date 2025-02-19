@@ -126,7 +126,43 @@ class Slave(AXI3):
             return "BVALID is True"
         return "BVALID is False"
     
-    
+    class TransistorRead(AXI3):
+    def __init__(self):
+        super().__init__()
+        self.data = None
+
+    def read_data(self):
+        if self.RVALID and self.RREADY:
+            return self.data
+        return "Read operation not valid"
+
+    def set_data(self, data):
+        self.data = data
+class TransistorRead(AXI3):
+    def __init__(self):
+        super().__init__()
+        self.data = None
+
+    def read_data(self):
+        if self.RVALID and self.RREADY:
+            return self.data
+        return "Read operation not valid"
+
+    def set_data(self, data):
+        self.data = data
+class TransistorWrite(AXI3):
+    def __init__(self):
+        super().__init__()
+        self.data = None
+
+    def write_data(self, data):
+        if self.WVALID and self.WREADY:
+            self.data = data
+            return "Write operation successful"
+        return "Write operation not valid"
+
+    def get_data(self):
+        return self.data
 
 
     

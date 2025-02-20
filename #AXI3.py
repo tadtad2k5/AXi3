@@ -24,13 +24,16 @@ class AXI3:
         self.burst_type = ""
     def update_program_counter(self, new_pc): # nhận dữ liệu từ pc
         self.program_counter = new_pc
+
+    def get_program_counter(self):
+        return self.program_counter
         
     def set_burst_type(self, burst_type):
         self.burst_type = burst_type
         
-    def get_program_counter(self):
-        return self.program_counter
-
+    def set_axsize(self, axsize):
+        self.axsize = axsize
+        
     def set_arvalid(self, value):
         self.ARVALID = value
 

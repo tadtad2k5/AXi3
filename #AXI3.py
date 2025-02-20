@@ -5,6 +5,7 @@
 print("Project AXI3")
 #AXI3 : Master side and Slave side
 # tách riêng từng kênh, xem các packet
+# tên kênh
 class AXI3:
     def __init_(self):
         self.AR = ""

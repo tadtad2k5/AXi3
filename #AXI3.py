@@ -21,6 +21,7 @@ class AXI3:
         self.WREADY = False
         self.BVALID = False
         self.BREADY = False
+        self.burst_type = ""
     def update_program_counter(self, new_pc): # nhận dữ liệu từ pc
         self.program_counter = new_pc
 

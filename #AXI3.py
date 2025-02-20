@@ -95,14 +95,9 @@ class Master(AXI3):
         if value == '111': return 'Reserved'
     def reset_signals(self):
         self.ARVALID = False
-        self.ARREADY = False
-        self.RVALID = False
         self.RREADY = False
         self.AWVALID = False
-        self.AWREADY = False
         self.WVALID = False
-        self.WREADY = False
-        self.BVALID = False
         self.BREADY = False
     def check_signals(self): #Kiểm tra tín hiệu
         return self.ARVALID, self.ARREADY, self.RVALID, self.RREADY, self.AWVALID, self.AWREADY, self.WVALID, self.WREADY, self.BVALID, self.BREADY

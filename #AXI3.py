@@ -4,6 +4,7 @@
 # 17/02/2025
 print("Project AXI3")
 #AXI3 : Master side and Slave side
+# tách riêng từng kênh, xem các packet
 class AXI3:
     def __init_(self):
         self.AR = ""

@@ -188,6 +188,8 @@ class TransistorRead(AXI3):
     def __init__(self):
         super().__init__()
         self.data = None
+        self.RVALID = False
+        self.RREADY = False
 
     def read_data(self):
         if self.RVALID and self.RREADY:
@@ -218,6 +220,8 @@ class TransistorWrite(AXI3):
     def __init__(self):
         super().__init__()
         self.data = None
+        self.WVALID = False
+        self.WREADY = False
 
     def write_data(self, data):
         if self.WVALID and self.WREADY:

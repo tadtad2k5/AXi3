@@ -157,6 +157,12 @@ class Slave(AXI3):
 
     def set_bvalid(self, value):
         self.BVALID = value
+    def reset_signals(self):
+        self.ARREADY = False
+        self.RVALID = False
+        self.AWREADY = False
+        self.WREADY = False
+        self.BVALID = False
 
     def read_address_channel(self):
         if self.ARREADY:

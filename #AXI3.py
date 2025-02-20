@@ -62,11 +62,19 @@ Kênh B sẽ có tín hiệu BVALID (slave) và tín hiệu BREADY (master) .
 class Master(AXI3):
     def __init__(self):
         super().__init__()
+        self.ID = id
         self.AR = "ARVALID"
         self.R = "RREADY"
         self.AW = "AWVALID"
         self.W = "WVALID"
         self.B = "BREADY"
+        
+    def set_id(self, id):
+        self.ID = id
+
+    def get_id(self):
+        return self.ID
+        
     def AxSize(self, value):
         if value == '000': return '1 bytes in transfer'
         if value == '001': return '2 bytes in transfer'

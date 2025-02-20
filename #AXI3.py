@@ -21,6 +21,12 @@ class AXI3:
         self.WREADY = False
         self.BVALID = False
         self.BREADY = False
+    def update_program_counter(self, new_pc): # nhận dữ liệu từ pc
+        self.program_counter = new_pc
+
+    def get_program_counter(self):
+        return self.program_counter
+
     def set_arvalid(self, value):
         self.ARVALID = value
 

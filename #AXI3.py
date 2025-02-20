@@ -52,7 +52,51 @@ class Master(AXI3):
         self.AW = "AWVALID"
         self.W = "WVALID"
         self.B = "BREADY"
-
+    def AxSize(self, value):
+        if value == '000': return '1 bytes in transfer'
+        if value == '001': return '2 bytes in transfer'
+        if value == '010': return '4 bytes in transfer'
+        if value == '011': return '8 bytes in transfer'
+        if value == '100': return '16 bytes in transfer'
+        if value == '101': return '32 bytes in transfer'
+        if value == '110': return '64 bytes in transfer'
+        if value == '111': return '128 bytes in transfer'
+    def AxBURST(self, value):
+        if value == '00': return 'FIXED'
+        if value == '01': return 'INCR'
+        if value == '10': return 'WRAP'
+        if value == '11': return 'Reserved'
+    def RRESP_BRESP(self, value):
+        if value == '00': return 'OKAY'
+        if value == '01': return 'EXOKAY'
+        if value == '10': return 'SLVERR'
+        if value == '11': return 'DECERR'
+    def AxPROT(self, value): #Protection signal
+        if value == '000': return 'Unprivileged access, data access'
+        if value == '001': return 'Unprivileged access, instruction access'
+        if value == '010': return 'Privileged access, data access'
+        if value == '011': return 'Privileged access, instruction access'
+        if value == '100': return 'Secure access, data access'
+        if value == '101': return 'Secure access, instruction access'
+        if value == '110': return 'Reserved'
+        if value == '111': return 'Reserved'
+    def reset_signals(self):
+        self.ARVALID = False
+        self.ARREADY = False
+        self.RVALID = False
+        self.RREADY = False
+        self.AWVALID = False
+        self.AWREADY = False
+        self.WVALID = False
+        self.WREADY = False
+        self.BVALID = False
+        self.BREADY = False
+    def check_signals(self): #Kiểm tra tín hiệu
+        return self.ARVALID, self.ARREADY, self.RVALID, self.RREADY, self.AWVALID, self.AWREADY, self.WVALID, self.WREADY, self.BVALID, self.BREADY
+    def print_signals(self):
+        signals = self.check_signals()
+        for signal, state in signals.items():
+            print(f"{signal}: {state}")
     def read_address_channel(self):
         if self.AR == "ARVALID":
             return True
@@ -126,7 +170,7 @@ class Slave(AXI3):
             return "BVALID is True"
         return "BVALID is False"
     
-    class TransistorRead(AXI3):
+class TransistorRead(AXI3):
     def __init__(self):
         super().__init__()
         self.data = None
@@ -134,7 +178,7 @@ class Slave(AXI3):
     def read_data(self):
         if self.RVALID and self.RREADY:
             return self.data
-        return "Read operation not valid"
+        return "Khong the doc"
 
     def set_data(self, data):
         self.data = data
@@ -146,7 +190,7 @@ class TransistorRead(AXI3):
     def read_data(self):
         if self.RVALID and self.RREADY:
             return self.data
-        return "Read operation not valid"
+        return "Khong the doc"
 
     def set_data(self, data):
         self.data = data
@@ -158,8 +202,8 @@ class TransistorWrite(AXI3):
     def write_data(self, data):
         if self.WVALID and self.WREADY:
             self.data = data
-            return "Write operation successful"
-        return "Write operation not valid"
+            return "Ghi thanh cong"
+        return "Khong the ghi "
 
     def get_data(self):
         return self.data

@@ -194,6 +194,24 @@ class TransistorRead(AXI3):
 
     def set_data(self, data):
         self.data = data
+
+    def reset_data(self):
+        self.data = None
+
+    def check_signals(self):
+        return {
+            "RVALID": self.RVALID,
+            "RREADY": self.RREADY
+        }
+
+    def print_signals(self):
+        signals = self.check_signals()
+        for signal, state in signals.items():
+            print(f"{signal}: {state}")
+
+    def is_data_available(self):
+        return self.data is not None
+
 class TransistorWrite(AXI3):
     def __init__(self):
         super().__init__()
@@ -203,11 +221,27 @@ class TransistorWrite(AXI3):
         if self.WVALID and self.WREADY:
             self.data = data
             return "Ghi thanh cong"
-        return "Khong the ghi "
+        return "Khong the ghi"
 
     def get_data(self):
         return self.data
 
+    def reset_data(self):
+        self.data = None
+
+    def check_signals(self):
+        return {
+            "WVALID": self.WVALID,
+            "WREADY": self.WREADY
+        }
+
+    def print_signals(self):
+        signals = self.check_signals()
+        for signal, state in signals.items():
+            print(f"{signal}: {state}")
+
+    def is_data_available(self):
+        return self.data is not None
 
     
     

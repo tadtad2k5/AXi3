@@ -188,18 +188,6 @@ class TransistorRead(AXI3):
 
     def set_data(self, data):
         self.data = data
-class TransistorRead(AXI3):
-    def __init__(self):
-        super().__init__()
-        self.data = None
-
-    def read_data(self):
-        if self.RVALID and self.RREADY:
-            return self.data
-        return "Khong the doc"
-
-    def set_data(self, data):
-        self.data = data
 
     def reset_data(self):
         self.data = None

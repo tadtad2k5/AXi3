@@ -259,6 +259,14 @@ class TransistorWrite(AXI3):
     def is_data_available(self):
         return self.data is not None
 
-    
+   class ReadAddressChannel(Master):
+    def __init__(self):
+        super().__init__()
+        self.AR = ""
+        self.ARADDR = None
+        self.ARLEN = None
+        self.ARSIZE = None
+        self.ARBURST = None
+        self.ARVALID = False 
     
         

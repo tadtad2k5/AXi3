@@ -254,7 +254,10 @@ class Master_ReadAddressChannel(Master):
         self.ARSIZE = None
         self.ARBURST = None
         self.ARVALID = False
-
+        
+    def set_araddr(self, address):
+        self.ARADDR = address
+        
     def set_address(self, address):
         self.ARADDR = address
 
@@ -279,64 +282,76 @@ class Master_ReadAddressChannel(Master):
             "ARLEN": self.ARLEN,
             "ARSIZE": self.ARSIZE,
             "ARBURST": self.ARBURST,
-            "ARVALID": self.ARVALID
+            "ARVALID": self.ARVALIDe
         }
 
-    def print_address_info(self): #kiem tra thông tin địa chỉ
-        address_info = self.get_address_info()
-        for key, value in address_info.items():
-            print(f"{key}: {value}")
+    def send_read_address(self, slave):
+        if self.ARVALID:
+            print("Sending read address to slave: ")
+            slave.set_araddr(self.ARADDR)
+            slave.set_arvalid(True)
+            print("Read address sent.")
+        else:
+            print("Read address is not valid.")
+
 class Slave_ReadAddressChannel(Slave):
     def __init__(self):
         super().__init__()
         self.ARREADY = False
-
+        self.ARADDR = None
     def set_arready(self, value):
         self.ARREADY = value
-
-    def process_read_request(self):
-        if self.ARREADY:
-            print("Processing read request...")
-            # Thực hiện các thao tác xử lý yêu cầu đọc tại đây
-            self.ARREADY = False  # Reset tín hiệu ARREADY sau khi xử lý xong
+    def set_araddr(self, address):
+        self.ARADDR = address
+    def get_address(self):
+        return self.ARADDR
+    def send_read_address(self, slave):
+        if self.ARVALID:
+            print("Sending read address to slave: ")
+            slave.set_araddr(self.ARADDR)
+            slave.set_arvalid(True)
+            print("Read address sent.")
         else:
-            print("Read request is not ready.")
-
+            print("Read address is not valid.")
 class Master_ReadDataChannel(Master):
-    def __init__(self):
-            super().__init__()
-            self.R = ""
-            self.RREADY = False
-    
-    def set_rready(self, value):
-            self.RREADY = value
-    
-    def process_read_data(self):
-            if self.RREADY:
-                print("Processing read data...")
-                # Thực hiện các thao tác xử lý dữ liệu đọc tại đây
-                self.RREADY = False  # Reset tín hiệu RREADY sau khi xử lý xong
-            else:
-                print("Read data is not ready.")
-class Slave_ReadDataChannel(Slave):
     def __init__(self):
         super().__init__()
         self.RVALID = False
-        self.RRESP = None
         self.RDATA = None
-        self.RLAST = None
 
     def set_rvalid(self, value):
         self.RVALID = value
 
-    def set_rresp(self, response):
-        self.RRESP = response
+    def set_rdata(self, data):
+        self.RDATA = data
+
+    def get_read_data(self):
+        if self.RVALID:
+            data = self.RDATA
+            self.RVALID = False  # Reset tín hiệu RVALID sau khi đọc dữ liệu
+            return data
+        else:
+            return None
+
+class Slave_ReadDataChannel(Slave):
+    def __init__(self):
+        super().__init__()
+        self.RVALID = False
+        self.RDATA = None
+        self.RLAST = False
+        self.RRESP = None
+
+    def set_rvalid(self, value):
+        self.RVALID = value
 
     def set_rdata(self, data):
         self.RDATA = data
 
     def set_rlast(self, last):
         self.RLAST = last
+
+    def set_rresp(self, response):
+        self.RRESP = response
 
     def validate_data(self):
         if self.RDATA is not None and self.RRESP is not None:
@@ -347,23 +362,27 @@ class Slave_ReadDataChannel(Slave):
     def get_data_info(self):
         return {
             "RDATA": self.RDATA,
-            "RRESP": self.RRESP,
             "RLAST": self.RLAST,
+            "RRESP": self.RRESP,
             "RVALID": self.RVALID
         }
 
-    def print_data_info(self): #kiem tra thông tin dữ liệu
-        data_info = self.get_data_info()
-        for key, value in data_info.items():
-            print(f"{key}: {value}")
-
     def process_read_data(self):
         if self.RVALID:
-            print("Processing read data...")
-            # Thực hiện các thao tác xử lý dữ liệu đọc tại đây
+            print("Processing read data: ")
+            print(f"Data: {self.RDATA}")
             self.RVALID = False  # Reset tín hiệu RVALID sau khi xử lý xong
         else:
             print("Read data is not ready.")
+        
+'''# Slave chuẩn bị dữ liệu
+slave_read_data_channel = Slave_ReadDataChannel()
+slave_read_data_channel.set_rdata("Data from slave")
+slave_read_data_channel.set_rvalid(True)
+
+# Master yêu cầu dữ liệu
+read_data = slave_read_data_channel.get_read_data()
+print(f"Data received by master: {read_data}"'''
 #WRITE
 class Master_WriteAddressChannel(Master):
     def __init__(self):
@@ -387,7 +406,7 @@ class Master_WriteAddressChannel(Master):
     def set_burst(self, burst):
         self.AWBURST = burst
 
-    def validate_address(self): #kiem tra dia chi co hop le hay khong
+    def validate_address(self): # kiểm tra địa chỉ có hợp lệ hay không
         if self.AWADDR is not None and self.AWLEN is not None and self.AWSIZE is not None and self.AWBURST is not None:
             self.AWVALID = True 
         else:
@@ -402,10 +421,20 @@ class Master_WriteAddressChannel(Master):
             "AWVALID": self.AWVALID
         }
 
-    def print_address_info(self): #kiem tra thông tin địa chỉ
+    def print_address_info(self): # kiểm tra thông tin địa chỉ
         address_info = self.get_address_info()
         for key, value in address_info.items():
             print(f"{key}: {value}")
+
+    def send_write_address(self, slave):
+        if self.AWVALID:
+            print("Sending write address to slave...")
+            slave.set_awready(True)  # Thiết lập tín hiệu AWREADY của slave
+            print("Write address sent by slave.")
+            return self.AWADDR  # Trả về địa chỉ ghi để slave sử dụng
+        else:
+            print("Write address is not valid.")
+            return None
 class Slave_WriteAddressChannel(Slave):
     def __init__(self):
         super().__init__()
@@ -414,10 +443,11 @@ class Slave_WriteAddressChannel(Slave):
     def set_awready(self, value):
         self.AWREADY = value
 
-    def process_write_request(self):
+    def process_write_request(self, slave_write_data_channel, address,memory):
         if self.AWREADY:
-            print("Processing write request...")
-            # Thực hiện các thao tác xử lý yêu cầu ghi tại đây
+            print("Processing write request:")
+            slave_write_data_channel.set_address(address)
+            slave_write_data_channel.set_wready(True)
             self.AWREADY = False  # Reset tín hiệu AWREADY sau khi xử lý xong
         else:
             print("Write request is not ready.")
@@ -426,37 +456,60 @@ class Master_WriteDataChannel(Master):
         super().__init__()
         self.W = ""
         self.WDATA = None
-        self.WLAST = None
+        self.WLAST = False
         self.WVALID = False
+
     def set_data(self, data):
         self.WDATA = data
+
     def set_last(self, last):
         self.WLAST = last
+
     def validate_data(self):
         if self.WDATA is not None:
             self.WVALID = True
         else:
             self.WVALID = False
+
     def get_data_info(self):
         return {
             "WDATA": self.WDATA,
             "WLAST": self.WLAST,
             "WVALID": self.WVALID
         }
-    def print_data_info(self): #kiem tra thông tin dữ liệu
+
+    def print_data_info(self): # kiểm tra thông tin dữ liệu
         data_info = self.get_data_info()
         for key, value in data_info.items():
             print(f"{key}: {value}")
+
+    def send_write_data(self, slave):
+        if self.WVALID:
+            print("Sending write data to slave...")
+            slave.set_wready(True)  # Thiết lập tín hiệu WREADY của slave
+            print("Write data sent by slave.")
+            return self.WDATA  # Trả về dữ liệu ghi để slave sử dụng
+        else:
+            print("Write data is not valid.")
+            return None
 class Slave_WriteDataChannel(Slave):
     def __init__(self):
         super().__init__()
         self.WREADY = False
+        self.address = None
+        self.data = None
     def set_wready(self, value):
         self.WREADY = value
-    def process_write_data(self):
+    def set_address(self, address):
+        self.address = address
+    def set_data(self, data):
+        self.data = data
+    def process_write_data(self, memory):
         if self.WREADY:
-            print("Processing write data...")
-            # Thực hiện các thao tác xử lý dữ liệu ghi tại đây
+            print("Processing write data:")
+            print(f"Address: {self.address}")
+            print(f"Data: {self.data}")
+            memory.write_data(self.address, self.data)
             self.WREADY = False  # Reset tín hiệu WREADY sau khi xử lý xong
         else:
             print("Write data is not ready.")
@@ -467,11 +520,11 @@ class Master_WriteResponseChannel(Master):
         self.BREADY = False
     def set_bready(self, value):
         self.BREADY = value
-    def process_write_response(self):
+    def send_write_response(self, slave):
         if self.BREADY:
-            print("Processing write response...")
-            # Thực hiện các thao tác xử lý phản hồi ghi tại đây
-            self.BREADY = False  # Reset tín hiệu BREADY sau khi xử lý xong
+            print("Sending write response to master...")
+            slave.set_bvalid(True)  # Thiết lập tín hiệu BVALID của slave
+            print("Write response sent by slave.")
         else:
             print("Write response is not ready.")
 class Slave_WriteResponseChannel(Slave):
@@ -483,23 +536,21 @@ class Slave_WriteResponseChannel(Slave):
         self.BVALID = value
     def set_bresp(self, response):
         self.BRESP = response
-    def validate_response(self): #kiem tra phản hồi co hop le hay khong
-        if self.BRESP is not None:
-            self.BVALID = True
-        else:
-            self.BVALID = False
-    def get_response_info(self):
-        return {
-            "BRESP": self.BRESP,
-            "BVALID": self.BVALID
-        }
-    def print_response_info(self): #kiem tra thông tin phản hồi
-        response_info = self.get_response_info()
-        for key, value in response_info.items():
-            print(f"{key}: {value}")
     def process_write_response(self):
         if self.BVALID:
-            print("Processing write response...")
-            # Thực hiện các thao tác xử lý phản hồi ghi tại đây
+            print("Đang xử lý phản hồi ghi:")  # Processing write response
+            if self.BRESP == "0b00":
+                print("Phản hồi: OKAY")  # Response: OKAY
+            elif self.BRESP == "0b01":
+                print("Phản hồi: EXOKAY")
+            elif self.BRESP == "0b10":
+                print("Phản hồi: SLVERR")
+            elif self.BRESP == "0b11":
+                print("Phản hồi: DECERR")
+            else:
+                print(f"Phản hồi: {self.BRESP}")  # Response
             self.BVALID = False
-#TEST
+            return self.BRESP  # Trả về tín hiệu BRESP
+        else:
+            print("Phản hồi ghi không hợp lệ.")  # Write response is not valid
+            return None

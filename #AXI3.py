@@ -244,6 +244,10 @@ class TransistorWrite(AXI3):
 
     def is_data_available(self):
         return self.data is not None
+''' Viết các class con của Master và Slave theo ảnh.
+Đã định hình định dạng các class, 
+Đang viết tiếp kết nối các class với nhau hợp lý hơn
+'''
 #READ
 class Master_ReadAddressChannel(Master):
     def __init__(self):
@@ -375,14 +379,7 @@ class Slave_ReadDataChannel(Slave):
         else:
             print("Read data is not ready.")
         
-'''# Slave chuẩn bị dữ liệu
-slave_read_data_channel = Slave_ReadDataChannel()
-slave_read_data_channel.set_rdata("Data from slave")
-slave_read_data_channel.set_rvalid(True)
 
-# Master yêu cầu dữ liệu
-read_data = slave_read_data_channel.get_read_data()
-print(f"Data received by master: {read_data}"'''
 #WRITE
 class Master_WriteAddressChannel(Master):
     def __init__(self):

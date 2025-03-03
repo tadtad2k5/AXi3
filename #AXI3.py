@@ -214,40 +214,7 @@ class TransistorRead(AXI3):
     def is_data_available(self):
         return self.data is not None
 
-class TransistorWrite(AXI3):
-    def __init__(self):
-        super().__init__()
-        self.data = None
 
-    def write_data(self, data):
-        if self.WVALID and self.WREADY:
-            self.data = data
-            return "Ghi thanh cong"
-        return "Khong the ghi"
-
-    def get_data(self):
-        return self.data
-
-    def reset_data(self):
-        self.data = None
-
-    def check_signals(self):
-        return {
-            "WVALID": self.WVALID,
-            "WREADY": self.WREADY
-        }
-
-    def print_signals(self):
-        signals = self.check_signals()
-        for signal, state in signals.items():
-            print(f"{signal}: {state}")
-
-    def is_data_available(self):
-        return self.data is not None
-''' Viết các class con của Master và Slave theo ảnh.
-Đã định hình định dạng các class, 
-Đang viết tiếp kết nối các class với nhau hợp lý hơn
-'''
 #READ
 class Master_ReadAddressChannel(Master):
     def __init__(self):
